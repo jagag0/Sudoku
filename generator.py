@@ -81,9 +81,3 @@ def generate_puzzle(difficulty):
     print(*board.intended_solution, sep='\n', end='\n'+'//'+'\n')
     print(*board.grid, sep='\n', end='\n'+'//'+'\n')
     return board.grid
-
-
-
-start_time = time.time()
-end_time = time.time()
-print(f"Runtime: {end_time - start_time:.4f} seconds")
