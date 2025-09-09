@@ -9,5 +9,6 @@ After starting the game, player may use the left-mouse-click + num-keys to fill 
 numbers and the right-mouse-click + num-keys to pencilmark which candidates are available
 for each cell. Filled in numbers can be deleted with backspace/delete, candidates can be removed
 by repeating their input process. To access the menu to change difficulty or generate another puzzle,
-press Escape( WARNING!: You will not be able to access your current puzzle again! ).
+press Escape( WARNING!: You WILL NOT be able to access your current puzzle again! ).
+
 
