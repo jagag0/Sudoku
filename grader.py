@@ -1,5 +1,5 @@
-from copy import deepcopy
-from utility import is_valid, is_filled
+import copy
+from utility import is_valid, is_filled, copy_grid
 from itertools import combinations
 
 class Sudoku:
@@ -12,10 +12,10 @@ class Sudoku:
                       for start_row in [0, 3, 6] for start_col in [0, 3, 6]]
         self.units = self.rows + self.columns + self.boxes
 
-        self.strategies = [('naked_singles', 0, self.naked_singles), ('hidden_singles', 0, self.hidden_singles),
-                           ('naked_pairs', 1, self.naked_pairs), ('hidden_pairs', 1, self.hidden_pairs),
-                           ('naked_triples', 1, self.naked_triples), ('hidden_triples', 2, self.hidden_triples),
-                           ('locked_candidates_pointing', 3, self.locked_candidates_pointing), ('locked_candidates_claiming', 3, self.locked_candidates_claiming)]
+        self.easy_strategies = [('naked_singles', 0, self.naked_singles), ('hidden_singles', 0, self.hidden_singles)]
+        self.medium_strategies = self.easy_strategies + [('naked_pairs', 1, self.naked_pairs), ('hidden_pairs', 2, self.hidden_pairs),
+                           ('naked_triples', 2, self.naked_triples), ('hidden_triples', 3, self.hidden_triples),
+                           ('locked_candidates_pointing', 2, self.locked_candidates_pointing), ('locked_candidates_claiming', 2, self.locked_candidates_claiming)]
 
     def initialize_candidates_grid(self):
         candidates = [[set() for _ in range(9)] for _ in range(9)]
@@ -38,7 +38,11 @@ class Sudoku:
     def naked_singles(self):
         progress = False
         for row in range(9):
+            if progress:
+                break
             for col in range(9):
+                if progress:
+                    break
                 if self.grid[row][col] == 0 and len(self.candidates_grid[row][col]) == 1:
                     progress = True
                     num = self.candidates_grid[row][col].pop()
@@ -49,17 +53,21 @@ class Sudoku:
     def hidden_singles(self):
         progress = False
         for unit in self.units:
+            if progress:
+                break
             possible_positions = {num: [] for num in range(1, 10)}
             for row, col in unit:
                 for candidate in self.candidates_grid[row][col]:
                     possible_positions[candidate].append((row, col))
             for num, positions in possible_positions.items():
+                if progress:
+                    break
                 if len(positions) == 1:
                     progress = True
                     row, col = positions[0]
                     self.grid[row][col] = num
                     self.basic_update(row, col, num)
-        return progress
+
 
     def naked_pairs(self):
         progress = False
@@ -151,8 +159,7 @@ class Sudoku:
                     number_positions[num].append((row, col))
 
             for triple in combinations(range(1, 10), 3):
-                shared_cells = (set(number_positions[triple[0]]) & set(number_positions[triple[1]]) & set(
-                    number_positions[triple[2]]))
+                shared_cells = (set(number_positions[triple[0]]) & set(number_positions[triple[1]]) & set(number_positions[triple[2]]))
                 if len(shared_cells) == 3:
                     for row, col in shared_cells:
                         extras = self.candidates_grid[row][col] - set(triple)
@@ -230,10 +237,12 @@ class Sudoku:
         return progress
 
 
+
+
 def is_easy(puzzle):
     sudoku = Sudoku()
-    copy = deepcopy(puzzle)
-    sudoku.grid = copy
+    backup = copy_grid(puzzle)
+    sudoku.grid = backup
     sudoku.initialize_candidates_grid()
 
     while True:
@@ -247,8 +256,25 @@ def is_easy(puzzle):
         return True
     return False
 
-def is_medium():
-    return
+def is_medium(puzzle):
+    sudoku = Sudoku()
+    backup = copy_grid(puzzle)
+    sudoku.grid = backup
+    sudoku.initialize_candidates_grid()
+    rating = 0
+    
+    progress = True
+    while progress:
+        progress = False
+        for _, score, strategy in sudoku.medium_strategies:
+            if strategy():
+                rating += score
+                progress = True
+                break
 
-def is_hard():
-    return
+    if is_filled(sudoku.grid):
+        if 2 <= rating <= 10:
+            return True
+    return False
+
+
