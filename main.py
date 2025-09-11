@@ -1,4 +1,4 @@
-from UI import SudokuGame
+from user_interface import SudokuGame
 
 def main():
     game = SudokuGame()
