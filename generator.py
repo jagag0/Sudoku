@@ -2,21 +2,22 @@ import copy
 import random
 import time
 from utility import is_valid
-from grader import is_easy, is_medium, is_hard
+from grader import is_easy, is_medium
 
 
 class Board:
     def __init__(self):
         self.grid = [[0 for _ in range(9)] for _ in range(9)]
+        self.cells = [(r, c) for r in range(9) for c in range(9)]
         self.solutions_count = None
         self.empty_cells = None
-        self.intended_solution = None
+        self.solution = None
 
     def fill(self):
         for row in range(9):
             for col in range(9):
                 if self.grid[row][col] == 0:
-                    nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                    nums = [a for a in range(1, 10)]
                     random.shuffle(nums)
                     for i in nums:
                         if is_valid(self.grid, row, col, i):
@@ -41,20 +42,20 @@ class Board:
 
         row, col = self.empty_cells[index]
         for num in range(1, 10):
-            if is_valid(self.grid, row, col, num) and num != self.intended_solution[row][col]:
+            if is_valid(self.grid, row, col, num) and num != self.solution[row][col]:
                 self.grid[row][col] = num
                 self.solve(index + 1)
                 self.grid[row][col] = 0
 
     def uniqueness_check(self):
-        copy = [row[:] for row in self.grid]
+        backup = copy.deepcopy(self.grid)
         self.empty_cells = self.get_empty_cells()
         self.solutions_count = 0
         self.solve(0)
-        self.grid = copy
+        self.grid = backup
         return self.solutions_count == 0
 
-    def remove_clues_easy(self, target_removal=61):
+    def remove_clues_easy(self, target_removal):
         cells = [(r, c) for r in range(9) for c in range(9)]
         random.shuffle(cells)
         removed = 0
@@ -65,19 +66,52 @@ class Board:
             backup = self.grid[row][col]
             self.grid[row][col] = 0
             if not self.uniqueness_check() or not is_easy(self.grid):
-                    self.grid[row][col] = backup
-                    continue
+                self.grid[row][col] = backup
+                continue
 
             removed += 1
             if removed >= target_removal:
                 break
 
+    def remove_clues_medium(self, target_removal,max_tries):
+        backup = copy.deepcopy(self.grid)
+
+        for _ in range(max_tries):
+            self.grid = copy.deepcopy(backup)
+            removed = 0
+
+            for r, c in random.sample(self.cells, 81):
+                if self.grid[r][c] == 0:
+                    continue
+
+                clue = self.grid[r][c]
+                self.grid[r][c] = 0
+                if not self.uniqueness_check():
+                    self.grid[r][c] = clue
+                    continue
+
+                removed += 1
+                if removed >= target_removal:
+                    if is_medium(self.grid):
+                        return True
+                    break
+
+        return False
+
+
 def generate_puzzle(difficulty):
+    start_time = time.time()
     board = Board()
     board.fill()
-    board.intended_solution = copy.deepcopy(board.grid)
+    board.solution = copy.deepcopy(board.grid)
     if difficulty == 'Easy':
-        board.remove_clues_easy()
-    print(*board.intended_solution, sep='\n', end='\n'+'//'+'\n')
-    print(*board.grid, sep='\n', end='\n'+'//'+'\n')
-    return board.grid
+        board.remove_clues_easy(random.randint(38, 45))
+    elif difficulty == 'Medium':
+        while not board.remove_clues_medium(random.randint(48, 53), 50):
+            board.grid = [[0 for _ in range(9)] for _ in range(9)]
+            board.fill()
+            board.solution = copy.deepcopy(board.grid)
+
+    end_time = time.time()
+    print(f"Runtime: {end_time - start_time:.4f} seconds")
+    return board.grid, board.solution
