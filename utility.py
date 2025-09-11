@@ -19,3 +19,6 @@ def is_filled(grid):
                 filled = False
 
     return filled
+
+def copy_grid(grid):
+    return [row.copy() for row in grid]
