@@ -24,13 +24,12 @@ class SudokuGame:
                              'Hard': pygame.Rect(350, 200, 120, 50), 'Start': pygame.Rect(70, 300, 400, 50), }
 
         self.grid = None
+        self.solution = None
+        self.solved = None
         self.selected_cell = None
-        self.selected_cell_candidates = None
+        self.selected_type = None
         self.locked = None
-        self.player_filled = set()
-        self.candidates = {(r, c): [] for r in range(9) for c in range(9)}
-
-
+        self.candidates = None
 
     def draw_menu(self):
         self.screen.fill(self.BG_COLOR)
@@ -44,19 +43,6 @@ class SudokuGame:
                 rect.x + rect.width // 2 - label.get_width() // 2,
                 rect.y + rect.height // 2 - label.get_height() // 2
             ))
-
-
-    def mouse_click_menu(self, pos):
-        for text, rect in self.menu_buttons.items():
-            if rect.collidepoint(pos):
-                if text in ('Easy', 'Medium', 'Hard'):
-                    self.difficulty = text
-                elif text == 'Start':
-                    if self.difficulty:
-                        self.grid = generate_puzzle(self.difficulty)
-                        self.locked = self.get_locked()
-                        self.state = 'playing'
-
 
     def get_locked(self):
         return {(r, c) for r in range(9) for c in range(9) if self.grid[r][c] != 0}
@@ -96,10 +82,33 @@ class SudokuGame:
             pygame.draw.rect(self.screen, self.SELECT_COLOR,
                              (c * self.CELL_SIZE, r * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE))
 
-        if self.selected_cell_candidates:
-            r, c = self.selected_cell_candidates
-            pygame.draw.rect(self.screen, self.SELECT_COLOR,
-                             (c * self.CELL_SIZE, r * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE))
+    def draw_winscreen(self):
+        color = (200, 200, 200)
+        pygame.draw.rect(self.screen, color, (200, 200, 150, 60))
+        win_text = self.FONT.render('SOLVED', True, self.LINE_COLOR)
+        self.screen.blit(win_text, (220,
+                                    220))
+
+    def playing_display(self):
+        self.draw_grid()
+        self.draw_selected_cell()
+        self.draw_numbers()
+        self.draw_candidates()
+        if self.solved:
+            self.draw_winscreen()
+
+    def mouse_click_menu(self, pos):
+        for text, rect in self.menu_buttons.items():
+            if rect.collidepoint(pos):
+                if text in ('Easy', 'Medium', 'Hard'):
+                    self.difficulty = text
+                elif text == 'Start':
+                    if self.difficulty:
+                        self.grid, self.solution = generate_puzzle(self.difficulty)
+                        self.locked = self.get_locked()
+                        self.state = 'playing'
+                        self.solved = False
+                        self.candidates = {(r, c): set() for r in range(9) for c in range(9)}
 
     def mouse_click_playing(self, key, pos):
         x, y = pos
@@ -107,10 +116,10 @@ class SudokuGame:
         if (r, c) not in self.locked:
             if key == 1:
                 self.selected_cell = (r, c)
-                self.selected_cell_candidates = None
+                self.selected_type = 1
             if key == 3:
-                self.selected_cell_candidates = (r, c)
-                self.selected_cell = None
+                self.selected_cell = (r, c)
+                self.selected_type = 2
 
     def handle_key_press(self, key, unicode):
         if key == pygame.K_ESCAPE:
@@ -118,58 +127,43 @@ class SudokuGame:
 
         elif self.selected_cell:
             r, c = self.selected_cell
-            if unicode in '123456789':
-                num = int(unicode)
-                self.grid[r][c] = num
-                self.player_filled.add((r, c))
-
-            elif key in [pygame.K_BACKSPACE, pygame.K_DELETE]:
+            if key in [pygame.K_BACKSPACE, pygame.K_DELETE]:
                 self.grid[r][c] = 0
-                self.player_filled.discard((r, c))
 
-        elif self.selected_cell_candidates:
-            r, c = self.selected_cell_candidates
-            if unicode in '123456789':
+            elif unicode in '123456789':
                 num = int(unicode)
-                if num in self.candidates[(r, c)]:
-                    self.candidates[(r, c)].remove(num)
+                if self.selected_type == 1:
+                    self.grid[r][c] = num
+                    if self.grid == self.solution:
+                        self.solved = True
                 else:
-                    self.candidates[(r, c)].append(num)
+                    if num in self.candidates[(r, c)]:
+                        self.candidates[(r, c)].remove(num)
+                    else:
+                        self.candidates[(r, c)].add(num)
 
     def run(self):
         running = True
         while running:
-            if self.state == 'menu':
-                self.clock.tick(60)
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        running = False
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
+            self.clock.tick(60)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.state == 'menu':
                         self.mouse_click_menu(pygame.mouse.get_pos())
-
-                self.draw_menu()
-                pygame.display.flip()
-
-            if self.state == 'playing':
-                self.clock.tick(60)
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        running = False
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                    else:
                         self.mouse_click_playing(event.button, pygame.mouse.get_pos())
-                    elif event.type == pygame.KEYDOWN:
-                        self.handle_key_press(event.key, event.unicode)
+                elif event.type == pygame.KEYDOWN:
+                    self.handle_key_press(event.key, event.unicode)
 
-                self.draw_grid()
-                self.draw_selected_cell()
-                self.draw_numbers()
-                self.draw_candidates()
-                pygame.display.flip()
+            if self.state == 'menu':
+                self.draw_menu()
+
+            else:
+                self.playing_display()
+            pygame.display.flip()
 
         pygame.quit()
         sys.exit()
-
-
-if __name__ == "__main__":
-    game = SudokuGame()
-    game.run()
