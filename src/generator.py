@@ -100,7 +100,6 @@ class Board:
 
 
 def generate_puzzle(difficulty):
-    start_time = time.time()
     board = Board()
     board.fill()
     board.solution = copy.deepcopy(board.grid)
@@ -111,7 +110,5 @@ def generate_puzzle(difficulty):
             board.grid = [[0 for _ in range(9)] for _ in range(9)]
             board.fill()
             board.solution = copy.deepcopy(board.grid)
-
-    end_time = time.time()
-    print(f"Runtime: {end_time - start_time:.4f} seconds")
+            
     return board.grid, board.solution
