@@ -1,1 +1,5 @@
+- Python 3.7 or higher
 
+- Pygame 2.0 or higher
+
+- Windows, macOS, or Linux with SDL support
