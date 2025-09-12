@@ -18,6 +18,8 @@ class Sudoku:
                            ('locked_candidates_pointing', 2, self.locked_candidates_pointing), ('locked_candidates_claiming', 2, self.locked_candidates_claiming)]
 
     def initialize_candidates_grid(self):
+        '''Initializes 9*9 grid of cells listing potential candidates
+        that can be validly placed in each.'''
         candidates = [[set() for _ in range(9)] for _ in range(9)]
         for row in range(9):
             for col in range(9):
@@ -26,6 +28,7 @@ class Sudoku:
         self.candidates_grid = candidates
 
     def basic_update(self, row, col, num):
+        '''Updates the grid of candidates after cell was filled - row,column and box.'''
         for i in range(9):
             self.candidates_grid[row][i].discard(num)
             self.candidates_grid[i][col].discard(num)
@@ -36,6 +39,8 @@ class Sudoku:
                 self.candidates_grid[r][c].discard(num)
 
     def naked_singles(self):
+        '''Finds cells where only one candidate is available
+         and fills them in.'''
         progress = False
         for row in range(9):
             if progress:
@@ -51,6 +56,8 @@ class Sudoku:
         return progress
 
     def hidden_singles(self):
+        '''Finds candidates that appear in only one cell
+         in a unit(row,column,box) and fills them in.'''
         progress = False
         for unit in self.units:
             if progress:
@@ -70,6 +77,10 @@ class Sudoku:
 
 
     def naked_pairs(self):
+        '''Finds two cells in a unit that have only the same two candidates and
+         removes those candidates from other cells in the unit, "if progress: break"
+         stops the process after progress has been made to utilize easier techniques first.
+         '''
         progress = False
 
         for unit in self.units:
@@ -98,6 +109,10 @@ class Sudoku:
         return progress
 
     def hidden_pairs(self):
+        '''Finds two candidates that are only in the same two cells in a unit and
+        removes other candidates those cells, "if progress: break"
+        stops the process after progress has been made to utilize easier techniques first.
+        '''
         progress = False
 
         for unit in self.units:
@@ -128,6 +143,10 @@ class Sudoku:
         return progress
 
     def naked_triples(self):
+        '''Finds three cells in a unit that share the same three candidates and
+        removes those candidates from other cells in the unit, "if progress: break"
+        stops the process after progress has been made to utilize easier techniques first.
+                 '''
         progress = False
 
         for unit in self.units:
@@ -147,6 +166,10 @@ class Sudoku:
         return progress
 
     def hidden_triples(self):
+        '''Finds three candidates that are only in the same three cells in a unit and
+        removes other candidates those cells, "if progress: break"
+        stops the process after progress has been made to utilize easier techniques first.
+        '''
         progress = False
 
         for unit in self.units:
@@ -172,7 +195,8 @@ class Sudoku:
     def locked_candidates_pointing(self):
         ''' Checks positions of candidate in every box unit, if a candidate is in
         only one row/col removes the candidate from cells inside the row/col
-         and outside the box unit '''
+         and outside the box unit, "if progress: break"
+        stops the process after progress has been made to utilize easier techniques first. '''
         progress = False
 
         for box in self.boxes:
@@ -211,7 +235,8 @@ class Sudoku:
     def locked_candidates_claiming(self):
         ''' Checks candidate positions in every row/col, if candidate positions
         in a row/col are only in one box unit removes the candidate from
-        cells inside the box unit and outside  the row/col.'''
+        cells inside the box unit and outside the row/col, "if progress: break"
+        stops the process after progress has been made to utilize easier techniques first.'''
         progress = False
 
         for unit in self.rows + self.columns:
@@ -236,9 +261,6 @@ class Sudoku:
 
         return progress
 
-
-
-
 def is_easy(puzzle):
     sudoku = Sudoku()
     backup = copy_grid(puzzle)
@@ -262,7 +284,7 @@ def is_medium(puzzle):
     sudoku.grid = backup
     sudoku.initialize_candidates_grid()
     rating = 0
-    
+
     progress = True
     while progress:
         progress = False
