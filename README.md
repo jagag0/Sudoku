@@ -1,10 +1,20 @@
 # Sudoku
 
-This is a Sudoku game/generator by Jakub Gago.
+This is a Sudoku game/generator built wit Python and Pygame by Jakub Gago. 
+
+
+Project Structure
+
+src/
+├─ main.py            Entry point and game loop
+├─ user_interface.py  Renders menu, grid, handles input events
+├─ generator.py       Creates valid puzzles using backtracking algorithm to verify uniqueness
+├─ solver.py          Verifies puzzle solvability with human techniques, determines difficulty level
+└─ utils.py           Helpers
+requirements.txt
+README.md             User-facing instructions
 
 How To Install:
-
-
 
 
 
