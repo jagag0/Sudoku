@@ -2,16 +2,23 @@
 
 This is a Sudoku game/generator by Jakub Gago.
 
-How to Install:
+How To Install:
 
 
-Upon starting the game there is a difficulty selection menu. Level easy means
-that the puzzle can be solved with just the use of naked/hidden singles technique.
-Level medium requires at least some more advanced solving techniques and wi
 
 
-After starting the game, player may use the left-mouse-click + num-keys to fill in solved
+
+
+
+
+
+
+How To Play:
+Upon starting the game there is a difficulty selection menu. After choosing any difficulty level and clicking on the start button
+the game will start with Sudoku of desired difficulty. Player may use the left-mouse-click + num-keys to fill in solved
 numbers and the right-mouse-click + num-keys to pencilmark which candidates are available
 for each cell. Filled in numbers can be deleted with backspace/delete, candidates can be removed
-by repeating their input process. To access the menu to change difficulty or generate another puzzle,
+by repeating their input process. When the puzzle is successfully solved, a winmessage "SOLVED" will appear on the screen.
+
+To access the menu to change difficulty or generate another puzzle,
 press Escape( WARNING!: You WILL NOT be able to access your current puzzle again! ).
