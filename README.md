@@ -25,7 +25,11 @@ README.md
 
 How To Install
 ----------------------------------------------------------------------------------------------------------
+Open GitBash
 
+- git clone https://github.com/jagag0/Sudoku.git
+- cd Sudoku/src
+- python main.py
 
 
 
