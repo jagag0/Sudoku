@@ -12,10 +12,10 @@ class Sudoku:
                       for start_row in [0, 3, 6] for start_col in [0, 3, 6]]
         self.units = self.rows + self.columns + self.boxes
 
-        self.easy_strategies = [('naked_singles', 0, self.naked_singles), ('hidden_singles', 0, self.hidden_singles)]
-        self.medium_strategies = self.easy_strategies + [('naked_pairs', 1, self.naked_pairs), ('hidden_pairs', 2, self.hidden_pairs),
-                           ('naked_triples', 2, self.naked_triples), ('hidden_triples', 3, self.hidden_triples),
-                           ('locked_candidates_pointing', 2, self.locked_candidates_pointing), ('locked_candidates_claiming', 2, self.locked_candidates_claiming)]
+        self.easy_strategies = [(0, self.naked_singles), (0, self.hidden_singles)]
+        self.medium_strategies = self.easy_strategies + [(1, self.naked_pairs), (2, self.hidden_pairs),
+                           (2, self.naked_triples), (3, self.hidden_triples),
+                           (2, self.locked_candidates_pointing), (2, self.locked_candidates_claiming)]
 
     def initialize_candidates_grid(self):
         '''Initializes 9*9 grid of cells listing potential candidates
@@ -56,12 +56,16 @@ class Sudoku:
         for unit in self.units:
             possible_positions = {num: [] for num in range(1, 10)}
             for row, col in unit:
+                if self.candidates[row][col] == 0:
+                    continue
                 for candidate in self.candidates_grid[row][col]:
                     possible_positions[candidate].append((row, col))
+                    
             for num, positions in possible_positions.items():
                 if len(positions) == 1:
                     row, col = positions[0]
                     self.grid[row][col] = num
+                    self.candidates_grid[row][col].clear()
                     self.basic_update(row, col, num)
                     return True
                     
@@ -97,7 +101,7 @@ class Sudoku:
     def hidden_pairs(self):
         '''Finds two candidates that are only in the same two cells in a unit and
         removes other candidates those cells.'''
-        for unit in self.units:
+                for unit in self.units:
             number_positions = {num: [] for num in range(1, 10)}
             for row, col in unit:
                 for num in self.candidates_grid[row][col]:
@@ -148,11 +152,14 @@ class Sudoku:
                 for num in self.candidates_grid[row][col]:
                     number_positions[num].append((row, col))
 
-            for triple in combinations(range(1, 10), 3):
-                shared_cells = (set(number_positions[triple[0]]) & set(number_positions[triple[1]]) & set(number_positions[triple[2]]))
+            for a,b,c in combinations(range(1, 10), 3):
+                if not (2 <= len(number_positions[a]) <= 3): continue
+                if not (2 <= len(number_positions[b]) <= 3): continue
+                if not (2 <= len(number_positions[c]) <= 3): continue
+                shared_cells = (set(number_positions[a]) & set(number_positions[b]) & set(number_positions[c]))
                 if len(shared_cells) == 3:
                     for row, col in shared_cells:
-                        extras = self.candidates_grid[row][col] - set(triple)
+                        extras = self.candidates_grid[row][col] - set([a,b,c])
                         if extras:
                             progress = True
                             self.candidates_grid[row][col] -= extras
@@ -166,7 +173,6 @@ class Sudoku:
          if a candidate is in only one row/col removes the 
          candidate from cells inside the row/col and outside the box unit. '''
         progress = False
-
         for box in self.boxes:
             for num in range(1, 10):
                 positions = [(row, col) for row, col in box if num in self.candidates_grid[row][col]]
@@ -181,8 +187,8 @@ class Sudoku:
                             self.candidates_grid[row][col].remove(num)
                             progress = True
                     if progress:
-                        return progress
-                    
+                        return True
+
                 cols = {col for _, col in positions}
                 if len(cols) == 1:
                     col = cols.pop()
@@ -218,11 +224,6 @@ class Sudoku:
                         return True
         return False
 
-    
-
-
-
-
 
 def is_easy(puzzle):
     sudoku = Sudoku()
@@ -251,7 +252,7 @@ def is_medium(puzzle):
     progress = True
     while progress:
         progress = False
-        for _, score, strategy in sudoku.medium_strategies:
+        for score, strategy in sudoku.medium_strategies:
             if strategy():
                 rating += score
                 progress = True
@@ -261,5 +262,6 @@ def is_medium(puzzle):
         if 2 <= rating <= 10:
             return True
     return False
+
 
 
