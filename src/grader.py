@@ -56,7 +56,7 @@ class Sudoku:
         for unit in self.units:
             possible_positions = {num: [] for num in range(1, 10)}
             for row, col in unit:
-                if self.candidates[row][col] == 0:
+                if self.grid[row][col] != 0:
                     continue
                 for candidate in self.candidates_grid[row][col]:
                     possible_positions[candidate].append((row, col))
@@ -262,6 +262,7 @@ def is_medium(puzzle):
         if 2 <= rating <= 10:
             return True
     return False
+
 
 
 
