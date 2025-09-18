@@ -4,26 +4,34 @@ This is a Sudoku game/generator built wit Python and Pygame by Jakub Gago.
 
 
 Project Structure
+-------------------------------------------------------------------------------------------------------
 
 src/
-├─ main.py            Entry point and game loop
-├─ user_interface.py  Renders menu, grid, handles input events
-├─ generator.py       Creates valid puzzles using backtracking algorithm to verify uniqueness
-├─ solver.py          Verifies puzzle solvability with human techniques, determines difficulty level
-└─ utils.py           Helpers
+
+├─ main.py --Entry point and game loop
+
+├─ user_interface.py --Renders menu, grid, handles input events
+
+├─ generator.py --Creates valid puzzles using backtracking algorithm to verify uniqueness
+
+├─ solver.py --Verifies puzzle solvability with human techniques, determines difficulty level
+
+└─ utils.py --Helpers
+
 requirements.txt
-README.md             User-facing instructions
 
-How To Install:
-
+README.md   
 
 
-
-
+How To Install
+----------------------------------------------------------------------------------------------------------
 
 
 
-How To Play:
+
+
+How To Play
+----------------------------------------------------------------------------------------------------
 Upon starting the game there is a difficulty selection menu. After choosing any difficulty level and clicking on the start button
 the game will start with Sudoku of desired difficulty. Player may use the left-mouse-click + num-keys to fill in solved
 numbers and the right-mouse-click + num-keys to pencilmark which candidates are available
