@@ -1,6 +1,7 @@
 import pygame
 import sys
 from generator import generate_puzzle
+from utility import get_filled
 
 
 class SudokuGame:
@@ -16,12 +17,12 @@ class SudokuGame:
         self.CANDIDATE_FONT = pygame.font.SysFont(None, 15)
 
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
-        pygame.display.set_caption("Sudoku")
+        pygame.display.set_caption('Sudoku')
         self.clock = pygame.time.Clock()
         self.state = 'menu'
         self.difficulty = None
-        self.menu_buttons = {'Easy': pygame.Rect(70, 200, 120, 50), 'Medium': pygame.Rect(210, 200, 120, 50),
-                             'Hard': pygame.Rect(350, 200, 120, 50), 'Start': pygame.Rect(70, 300, 400, 50), }
+        self.menu_buttons = {'Easy': pygame.Rect(70, 200, 180, 50), 'Medium': pygame.Rect(290, 200, 180, 50),
+                              'Start': pygame.Rect(70, 300, 400, 50) }
 
         self.grid = None
         self.solution = None
@@ -43,9 +44,6 @@ class SudokuGame:
                 rect.x + rect.width // 2 - label.get_width() // 2,
                 rect.y + rect.height // 2 - label.get_height() // 2
             ))
-
-    def get_locked(self):
-        return {(r, c) for r in range(9) for c in range(9) if self.grid[r][c] != 0}
 
     def draw_grid(self):
         self.screen.fill(self.BG_COLOR)
@@ -105,7 +103,7 @@ class SudokuGame:
                 elif text == 'Start':
                     if self.difficulty:
                         self.grid, self.solution = generate_puzzle(self.difficulty)
-                        self.locked = self.get_locked()
+                        self.locked = get_filled(self.grid)
                         self.state = 'playing'
                         self.solved = False
                         self.candidates = {(r, c): set() for r in range(9) for c in range(9)}
