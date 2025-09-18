@@ -101,7 +101,7 @@ class Sudoku:
     def hidden_pairs(self):
         '''Finds two candidates that are only in the same two cells in a unit and
         removes other candidates those cells.'''
-                for unit in self.units:
+        for unit in self.units:
             number_positions = {num: [] for num in range(1, 10)}
             for row, col in unit:
                 for num in self.candidates_grid[row][col]:
@@ -262,6 +262,7 @@ def is_medium(puzzle):
         if 2 <= rating <= 10:
             return True
     return False
+
 
 
 
