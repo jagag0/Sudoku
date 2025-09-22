@@ -8,7 +8,7 @@ Project Structure
 
 src/
 
-├─ main.py --Entry point and game loop
+├─ main.py --Entry point 
 
 ├─ user_interface.py --Renders menu, grid, handles input events
 
