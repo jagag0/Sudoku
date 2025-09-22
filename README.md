@@ -23,18 +23,18 @@ requirements.txt
 README.md   
 
 
-How To Install
+How To Start
 ----------------------------------------------------------------------------------------------------------
-Open GitBash
+- Download and unzip the repo
+- Open the src file
+- run main.py
 
--> git clone https://github.com/jagag0/Sudoku.git
-
--> cd Sudoku/src
-
--> python main.py
-
-
-
+Or via GitBash
+> git clone https://github.com/jagag0/Sudoku.git
+> 
+> cd Sudoku/src
+> 
+> python main.py
 
 
 How To Play
