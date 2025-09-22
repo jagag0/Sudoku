@@ -25,16 +25,16 @@ README.md
 
 How To Start
 ----------------------------------------------------------------------------------------------------------
+Make sure you have installed Python version 3.7 or higher with the pygame module on your device.
+
 - Download and unzip the repo
 - Open the src file
 - run main.py
 
 Or via GitBash
-> git clone https://github.com/jagag0/Sudoku.git
-> 
-> cd Sudoku/src
-> 
-> python main.py
+- git clone https://github.com/jagag0/Sudoku.git
+-  cd Sudoku/src
+-  python main.py
 
 
 How To Play
